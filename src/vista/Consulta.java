@@ -131,7 +131,7 @@ public class Consulta extends JFrame {
                 return false; 
             }
         };
-        table.setBounds(10, 350, 600, 300);
+        table.setBounds(10, 350, 600, 200);
         table.add(new JScrollPane(resultados));
     }
 
@@ -259,21 +259,23 @@ public class Consulta extends JFrame {
             }
         });
         
-        /*resultados.addMouseListener(new MouseAdapter() {
+        resultados.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent evnt) {
                 if (evnt.getClickCount() == 1) {
                     carnet.setText(resultados.getValueAt(resultados.getSelectedRow(), 0).toString());
-                    marca.setSelectedItem(resultados.getValueAt(resultados.getSelectedRow(), 1).toString());
-                    stock.setText(resultados.getValueAt(resultados.getSelectedRow(), 2).toString());
-                    if (resultados.getValueAt(resultados.getSelectedRow(), 3).toString() == "false") {
-                        sino.setSelected(false);
+                    universidad.setSelectedItem(resultados.getValueAt(resultados.getSelectedRow(), 4).toString());
+                    nombre.setText(resultados.getValueAt(resultados.getSelectedRow(), 1).toString());
+                    edad.setText(resultados.getValueAt(resultados.getSelectedRow(), 3).toString()); 
+                    apellido.setText(resultados.getValueAt(resultados.getSelectedRow(), 2).toString()); 
+                    if (resultados.getValueAt(resultados.getSelectedRow(), 5).toString() == "false") {
+                        no.setSelected(true);
                     } else {
-                        sino.setSelected(true);
+                        si.setSelected(true);
                     }
                 }
             }
-        });*/
+        });
     }
 
     public void limpiarCampos() {
