@@ -1,4 +1,4 @@
-
+ 
 package conexion;
 
 import com.mysql.jdbc.Connection;
@@ -42,7 +42,7 @@ public class Conexion {
         user = "root";
         pass = "";
         driver = "com.mysql.jdbc.Driver";
-        url = "jdbc:mysql://localhost/Inscripciones";
+        url = "jdbc:mysql://localhost/inscripciones";
     }
     
     public Connection getCnx(){

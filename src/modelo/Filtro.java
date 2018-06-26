@@ -9,7 +9,7 @@ public class Filtro {
      private int id;
     private String  nombres;
     private String apellidos;
-    private int carnet;
+    private String carnet;
     private int edad;
     private String universidad;
     private boolean estado;    
@@ -38,11 +38,11 @@ public class Filtro {
         this.apellidos = apellidos;
     }
 
-    public int getCarnet() {
+    public String getCarnet() {
         return carnet;
     }
 
-    public void setCarnet(int carnet) {
+    public void setCarnet(String carnet) {
         this.carnet = carnet;
     }
 
@@ -73,7 +73,7 @@ public class Filtro {
         
     
     public Filtro(){}
-    public Filtro(int id, int carnet, String nombre, String apellido, int edad, String universidad, boolean estado){
+    public Filtro(int id, String carnet, String nombre, String apellido, int edad, String universidad, boolean estado){
         this.id = id;
         this.carnet = carnet;
         this.nombres = nombre;
@@ -83,7 +83,7 @@ public class Filtro {
         this.universidad = universidad;
     }
     
-    public Filtro(String nombre, String apellido, String universidad, int edad, boolean estado, int carnet){
+    public Filtro(String nombre, String apellido, String universidad, int edad, boolean estado, String carnet){
         this.carnet = carnet;
         this.nombres = nombre;
         this.edad = edad;

@@ -178,7 +178,7 @@ public class Consulta extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 FiltroDao fd = new FiltroDao();
                 //String nombre, String apellido, String universidad, int edad, boolean estado, int carnet
-                Filtro f = new Filtro(nombre.getText(), apellido.getText(), universidad.getSelectedItem().toString(), Integer.parseInt(edad.getText()), true, Integer.parseInt(carnet.getText()));
+                Filtro f = new Filtro(nombre.getText(), apellido.getText(), universidad.getSelectedItem().toString(), Integer.parseInt(edad.getText()), true, carnet.getText());
 
                 if (no.isSelected()) {
                     f.setEstado(false);
@@ -198,7 +198,7 @@ public class Consulta extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 FiltroDao fd = new FiltroDao();
-                Filtro f = new Filtro(nombre.getText(), apellido.getText(), universidad.getSelectedItem().toString(), Integer.parseInt(edad.getText()), true, Integer.parseInt(carnet.getText()));
+                Filtro f = new Filtro(nombre.getText(), apellido.getText(), universidad.getSelectedItem().toString(), Integer.parseInt(edad.getText()), true, carnet.getText());
 
                 if (no.isSelected()) {
                     f.setEstado(false);
@@ -219,7 +219,7 @@ public class Consulta extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 FiltroDao fd = new FiltroDao();
-                if (fd.delete(Integer.parseInt(carnet.getText()))) {
+                if (fd.delete(carnet.getText())) {
                     JOptionPane.showMessageDialog(null, "Filtro Eliminado con exito");
                     limpiarCampos();
                     llenarTabla();
@@ -233,7 +233,7 @@ public class Consulta extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 FiltroDao fd = new FiltroDao();
-                Filtro f = fd.read(Integer.parseInt(carnet.getText()));
+                Filtro f = fd.read(carnet.getText());
                 if (f == null) {
                     JOptionPane.showMessageDialog(null, "El filtro buscado no se ha encontrado");
                 } else {

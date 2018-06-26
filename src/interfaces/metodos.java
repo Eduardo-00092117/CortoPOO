@@ -9,9 +9,9 @@ import java.util.ArrayList;
  */
 public interface metodos <Generic>{
     public boolean create(Generic g);
-    public boolean delete(int key);
+    public boolean delete(String key);
     public boolean update (Generic c);
     
-    public Generic read(int key);
+    public Generic read(String key);
     public ArrayList<Generic> readAll();
 }
