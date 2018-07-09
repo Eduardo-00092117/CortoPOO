@@ -1,123 +1,162 @@
-
-package dao;
-/**
- *
- * @author UCA
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
-import conexion.Conexion;
-import interfaces.metodos;
+package dao;
+
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
+import java.util.List;
 import modelo.Filtro;
 
-public class FiltroDao implements metodos<Filtro>{
-    private static final String SQL__INSERT = "INSERT INTO alumnos (carnet, nombres, apellidos, edad, universidad, estado) VALUES (?, ?, ?, ?, ?, ?)";
-    private static final String SQL__UPDATE = "UPDATE alumnos SET nombres=?, apellidos=?, edad=?, universidad=?, estado=? WHERE carnet=?";
-    private static final String SQL__DELETE = "DELETE FROM alumnos WHERE carnet=?";
-    private static final String SQL__READ = "SELECT * FROM alumnos WHERE carnet=?";
-    private static final String SQL__READALL = "SELECT * FROM alumnos";
+/**
+ *
+ * @author Roberto
+ */
+public class FiltroDao extends BaseDao<Filtro> {
+
+    public FiltroDao(){
+        tabla = new DatosTabla(
+        "alumnos","id", new String[]{"carnet", "nombres", "apellidos", "edad", "universidad", "estado"}
+        );
+    }
+    @Override
+    Filtro mapaObjeto(ResultSet resultSet) {
+        //Creo el tipo objeto o sea la INSTANCIA
+        Filtro filtro = new Filtro();
+        try{
+            filtro.setId(resultSet.getInt(tabla.PRIMARY_KEY));
+            filtro.setCarnet(resultSet.getString(tabla.fields[0]));
+            filtro.setNombres(resultSet.getString(tabla.fields[1]));
+            filtro.setApellidos(resultSet.getString(tabla.fields[2]));
+            filtro.setEdad(resultSet.getInt(tabla.fields[3]));
+            filtro.setUniversidad(resultSet.getString(tabla.fields[4]));
+            filtro.setEstado(resultSet.getBoolean(tabla.fields[5]));
+        }
+        catch(SQLException error){
+            error.printStackTrace();
+        }
+        return filtro;
+    }
+
+    @Override
+    PreparedStatement getSelectStatement(Connection con, Filtro find, String by) {
+       String query = "SELECT * FROM "+tabla.TABLE_NAME+" WHERE "+by+"=?";
+        PreparedStatement preparedStatement = null;
+        try{
+            preparedStatement = con.prepareStatement(query);
+            if(by.equals(tabla.PRIMARY_KEY)){
+                preparedStatement.setInt(1, find.getId());
+            }
+            else if(by.equals(tabla.fields[0])){
+                preparedStatement.setString(1, find.getCarnet());
+            }
+            
+            else if(by.equals(tabla.fields[1])){
+                preparedStatement.setString(1, "%"+find.getNombres()+"%");
+            }
+            else if(by.equals(tabla.fields[2])){
+                preparedStatement.setString(1, "%"+find.getApellidos()+"%");
+            }
+            
+            else if(by.equals(tabla.fields[3])){
+                preparedStatement.setInt(1, find.getEdad());
+            }
+            
+            else if(by.equals(tabla.fields[4])){
+                preparedStatement.setString(1, "%"+find.getUniversidad()+"%");
+            }
+            
+            else if(by.equals(tabla.fields[5])){
+                preparedStatement.setBoolean(1, find.getEstado());
+            }
+
+        }
+        catch(SQLException error){
+            error.printStackTrace();
+        }
+        return preparedStatement;
+    }
+
+    @Override
+    PreparedStatement getInsertStatement(Connection con, Filtro _new) {
+        PreparedStatement preparedStatement = null;
+        try{
+            preparedStatement=con.prepareStatement(
+            "INSERT INTO "+ tabla.TABLE_NAME+" ("+tabla.fields[0]+" , "+tabla.fields[1]+" , "+tabla.fields[2]+" , "+tabla.fields[3]
+                    +" , "+tabla.fields[4]+" , "+tabla.fields[5]+") VALUES(?,?,?,?,?,?)"  
+            );
+            preparedStatement.setString(1, _new.getCarnet());
+            preparedStatement.setString(2, _new.getNombres());
+            preparedStatement.setString(3, _new.getApellidos());
+            preparedStatement.setInt(4, _new.getEdad());
+            preparedStatement.setString(5, _new.getUniversidad());
+            preparedStatement.setBoolean(6, _new.getEstado());
+        }
+        catch(SQLException error){
+            error.printStackTrace();
+        }
+        return preparedStatement;
+    }
+
+    @Override
+    PreparedStatement getUpdateStatement(Connection con, Filtro _new) {
+        PreparedStatement preparedStatement = null;
+        try{
+            preparedStatement=con.prepareStatement(
+                    "UPDATE "+tabla.TABLE_NAME+" SET "+tabla.fields[1]+" = ?,"+tabla.fields[2]+"= ?,"+tabla.fields[3]
+            +" = ?,"+tabla.fields[4]+" = ?,"+tabla.fields[5]+" = ? WHERE "+tabla.fields[0]   + " = ?"
+            );
+            
+            preparedStatement.setString(1, _new.getNombres());
+            preparedStatement.setString(2, _new.getApellidos());
+            preparedStatement.setInt(3, _new.getEdad());
+            preparedStatement.setString(4, _new.getUniversidad());
+            preparedStatement.setBoolean(5, _new.getEstado());
+            preparedStatement.setString(6, _new.getCarnet());
+        }
+        catch(SQLException error){
+            error.printStackTrace();
+        }
+        return preparedStatement;
+    }
+
+    @Override
+    PreparedStatement getDeleteStatement(Connection con, Filtro deleteObject) {
+        PreparedStatement preparedStatement = null;
+        try{
+            preparedStatement = con.prepareStatement(
+                    "DELETE FROM "+tabla.TABLE_NAME+" WHERE "+tabla.fields[0]+" = ?");
+            preparedStatement.setString(1, deleteObject.getCarnet()); 
+        }
+        catch(SQLException error){
+            error.printStackTrace();
+        }
+        return preparedStatement;
+    }
     
-    private static final Conexion con = Conexion.conectar();
-    
-    @Override
-    public boolean create(Filtro g) {
-        PreparedStatement ps;
-        try{
-            ps = con.getCnx().prepareStatement(SQL__INSERT);
-            ps.setString(1, g.getCarnet());
-            ps.setString(2, g.getNombres());
-            ps.setString(3, g.getApellidos());
-            ps.setInt(4, g.getEdad());
-            ps.setString(5, g.getUniversidad());
-            ps.setBoolean(6, g.getEstado());
-            if(ps.executeUpdate() > 0){
-                return true;
-            }
-        }catch(Exception ex){
-            
-        }finally{
-            con.cerrarConexion();
-        }
-        return false;
+    public List<Filtro> findByIdProducto(Filtro filtro){
+        return findBy(filtro,tabla.PRIMARY_KEY);
     }
-
-    @Override
-    public boolean delete(String key) {
-        PreparedStatement ps;
-        try{
-            ps = con.getCnx().prepareStatement(SQL__DELETE);
-            ps.setString(1, key);
-            if(ps.executeUpdate() > 0){
-                return true;
-            }
-        }catch(Exception ex){
-            
-        }finally{
-            con.cerrarConexion();
-        }
-        return false;
+    public List<Filtro> findByCarnet(Filtro filtro){
+        return findBy(filtro,tabla.fields[0]);
     }
-
-    @Override
-    public boolean update(Filtro c) {
-        PreparedStatement ps;
-        try{
-            ps = con.getCnx().prepareStatement(SQL__UPDATE);
-            ps.setString(1, c.getNombres());
-            ps.setString(2, c.getApellidos());
-            ps.setInt(3, c.getEdad());
-            ps.setString(4, c.getUniversidad());
-            ps.setBoolean(5, c.getEstado());
-            ps.setString(6, c.getCarnet());
-            if(ps.executeUpdate() > 0){
-                return true;
-            }
-        }catch(Exception ex){
-            
-        }finally{
-            con.cerrarConexion();
-        }
-        return false;
+    public List<Filtro> findByNombre(Filtro filtro){
+        return findBy(filtro,tabla.fields[1]);
     }
-
-    @Override
-    public Filtro read(String key) {
-        Filtro f = null;
-        PreparedStatement ps;
-        ResultSet rs;
-        try{
-            ps = con.getCnx().prepareStatement(SQL__READ);
-            ps.setString(1, key);
-            rs = ps.executeQuery();
-            
-            while(rs.next()){
-                //int id, String nombre, String apellido, String universidad, int edad, boolean estado, int carnet;
-                f = new Filtro(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getInt(5), rs.getString(6), rs.getBoolean(7));
-            }
-            rs.close();
-        }catch(Exception ex){}
-        finally{
-            con.cerrarConexion();
-        }
-        return f;
+    public List<Filtro> findByApellido(Filtro filtro){
+        return findBy(filtro,tabla.fields[2]);
     }
-
-    @Override
-    public ArrayList<Filtro> readAll() {
-        ArrayList<Filtro> all = new ArrayList();
-        Statement s;
-        ResultSet rs;
-        try{
-            s = con.getCnx().prepareStatement(SQL__READALL);
-            rs = s.executeQuery(SQL__READALL);
-            while(rs.next()){
-                all.add(new Filtro(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getInt(5), rs.getString(6), rs.getBoolean(7)));
-            }
-            rs.close();
-        }catch(Exception ex){}
-        return all;
+    public List<Filtro> findByEdad(Filtro filtro){
+        return findBy(filtro,tabla.fields[3]);
+    }
+    public List<Filtro> findByUniversidad(Filtro filtro){
+        return findBy(filtro,tabla.fields[4]);
+    }
+    public List<Filtro> findByEstado(Filtro filtro){
+        return findBy(filtro,tabla.fields[5]);
     }
 }

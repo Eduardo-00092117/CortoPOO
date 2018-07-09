@@ -3,6 +3,7 @@ package conexion;
 
 import com.mysql.jdbc.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,7 +21,7 @@ public class Conexion {
     
     public static Conexion instance;
     
-    public synchronized static Conexion conectar(){
+    public synchronized static Conexion getInstanceConexion(){
         if(instance == null){
             return new Conexion();
         }
@@ -46,7 +47,12 @@ public class Conexion {
     }
     
     public Connection getCnx(){
-        return cnx;
+        try {
+            return (Connection) DriverManager.getConnection(this.url, this.user, this.pass);
+        } catch (SQLException ex) {
+            Logger.getLogger(Conexion.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
     
     public void cerrarConexion(){

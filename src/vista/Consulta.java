@@ -1,12 +1,12 @@
 package vista;
 
 import dao.FiltroDao;
+import dao.FiltroDao;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -163,9 +163,8 @@ public class Consulta extends JFrame {
         tm.addColumn("Estado");
 
         FiltroDao fd = new FiltroDao();
-        ArrayList<Filtro> filtros = fd.readAll();
 
-        for (Filtro fi : filtros) {
+        for (Filtro fi : fd.findAll()) {
             tm.addRow(new Object[]{fi.getCarnet(), fi.getNombres(), fi.getApellidos(), fi.getEdad(), fi.getUniversidad(), fi.getEstado()});
         }
 
@@ -184,7 +183,7 @@ public class Consulta extends JFrame {
                     f.setEstado(false);
                 }
 
-                if (fd.create(f)) {
+                if (!fd.insert(f)) {
                     JOptionPane.showMessageDialog(null, "Filtro registrado con existo");
                     limpiarCampos();
                     llenarTabla();
@@ -204,7 +203,7 @@ public class Consulta extends JFrame {
                     f.setEstado(false);
                 }
 
-                if (fd.update(f)) {
+                if (!fd.update(f)) {
                     JOptionPane.showMessageDialog(null, "Filtro Modificacion con exito");
                     limpiarCampos();
                     llenarTabla();
@@ -219,7 +218,9 @@ public class Consulta extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 FiltroDao fd = new FiltroDao();
-                if (fd.delete(carnet.getText())) {
+                Filtro filtro = new Filtro();
+                filtro.setCarnet(carnet.getText());
+                if (fd.delete(filtro)) {
                     JOptionPane.showMessageDialog(null, "Filtro Eliminado con exito");
                     limpiarCampos();
                     llenarTabla();
@@ -233,10 +234,13 @@ public class Consulta extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 FiltroDao fd = new FiltroDao();
-                Filtro f = fd.read(carnet.getText());
-                if (f == null) {
+                Filtro filtro = new Filtro();
+                filtro.setCarnet(carnet.getText());
+                
+                if (fd.findByCarnet(filtro).size() == 0) {
                     JOptionPane.showMessageDialog(null, "El filtro buscado no se ha encontrado");
                 } else {
+                    Filtro f = fd.findByCarnet(filtro).get(0); 
                     carnet.setText(String.valueOf(f.getCarnet()));
                     edad.setText(String.valueOf(f.getEdad()));
                     nombre.setText(f.getNombres());
